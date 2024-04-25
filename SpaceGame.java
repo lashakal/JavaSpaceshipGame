@@ -33,6 +33,7 @@ public class SpaceGame extends JFrame implements KeyListener {
     private JPanel gamePanel;
     private JLabel scoreLabel;
     private JLabel healthLabel;
+    private JLabel timerLabel;
     private Timer timer;
     private boolean isGameOver;
     private int playerX, playerY;
@@ -45,6 +46,8 @@ public class SpaceGame extends JFrame implements KeyListener {
     private Clip fireClip;
     private Clip collisionClip;
     private boolean shieldActive = false;
+    private int gameDuration = 60000;
+    private long gameStartTime;
     private int shieldDuration = 5000;  // in milliseconds
     private long shieldStartTime;
 
@@ -98,6 +101,11 @@ public class SpaceGame extends JFrame implements KeyListener {
         healthLabel.setForeground(Color.WHITE);
         gamePanel.add(healthLabel);
 
+        timerLabel = new JLabel("Time: 60s");
+        timerLabel.setBounds(10, 10, 100, 20);
+        timerLabel.setForeground(Color.WHITE);
+        gamePanel.add(timerLabel);
+
         add(gamePanel);
         gamePanel.setFocusable(true);
         gamePanel.addKeyListener(this);
@@ -111,6 +119,8 @@ public class SpaceGame extends JFrame implements KeyListener {
         isFiring = false;
         obstacles = new java.util.ArrayList<>();
         healthPowerUps = new java.util.ArrayList<>();
+
+        gameStartTime = System.currentTimeMillis();
 
         timer = new Timer(20, new ActionListener() {
             @Override
@@ -255,8 +265,15 @@ public class SpaceGame extends JFrame implements KeyListener {
                 }
             }
 
+            int timeLeft = (int) ((gameDuration - (System.currentTimeMillis() - gameStartTime)) / 1000);
+
             scoreLabel.setText("Score: " + score);
             healthLabel.setText("Health: " + health);
+            timerLabel.setText("Time Left: " + timeLeft + "s");
+
+            if (isGameTimeUp()) {
+                isGameOver = true;
+            }
         }
     }
 
@@ -304,6 +321,10 @@ public class SpaceGame extends JFrame implements KeyListener {
 
     private boolean isShieldActive() {
         return shieldActive && (System.currentTimeMillis() - shieldStartTime) < shieldDuration;
+    }
+
+    private boolean isGameTimeUp() {
+        return (System.currentTimeMillis() - gameStartTime) > gameDuration;
     }
 
     @Override
