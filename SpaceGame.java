@@ -22,7 +22,8 @@ public class SpaceGame extends JFrame implements KeyListener {
     private static final int PROJECTILE_WIDTH = 5;
     private static final int PROJECTILE_HEIGHT = 10;
     private static final int PLAYER_SPEED = 10;
-    private static final int OBSTACLE_SPEED = 3;
+    private static final int OBSTACLE_SPEED_REGULAR = 3;
+    private static final int OBSTACLE_SPEED_HARD = 5;
     private static final int HEALTH_POWER_UP_SPEED = 3;
     private static final int PROJECTILE_SPEED = 10;
     private int spriteWidth = 20;
@@ -50,6 +51,7 @@ public class SpaceGame extends JFrame implements KeyListener {
     private long gameStartTime;
     private int shieldDuration = 5000;  // in milliseconds
     private long shieldStartTime;
+    private boolean hardLevel = false;
 
     private List<Point> obstacles;
     private List<Point> healthPowerUps;
@@ -177,6 +179,11 @@ public class SpaceGame extends JFrame implements KeyListener {
             g.fillOval(star.x, star.y, 2, 2);
         }
 
+        // Score label becomes red in the harder level
+        if (hardLevel) {
+            scoreLabel.setForeground(Color.RED);
+        }
+
         if (isGameOver) {
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 24));
@@ -188,7 +195,11 @@ public class SpaceGame extends JFrame implements KeyListener {
         if (!isGameOver) {
             // Move obstacles
             for (int i = 0; i < obstacles.size(); i++) {
-                obstacles.get(i).y += OBSTACLE_SPEED;
+                if (!hardLevel) {
+                    obstacles.get(i).y += OBSTACLE_SPEED_REGULAR;
+                } else {
+                    obstacles.get(i).y += OBSTACLE_SPEED_HARD;  // obstacles move faster in the harder level
+                }
                 if (obstacles.get(i).y > HEIGHT) {
                     obstacles.remove(i);
                     i--;
@@ -196,9 +207,16 @@ public class SpaceGame extends JFrame implements KeyListener {
             }
 
             // Generate new obstacles
-            if (Math.random() < 0.02) {
-                int obstacleX = (int) (Math.random() * (WIDTH - OBSTACLE_WIDTH));
-                obstacles.add(new Point(obstacleX, 0));
+            if (!hardLevel) {
+                if (Math.random() < 0.02) {
+                    int obstacleX = (int) (Math.random() * (WIDTH - OBSTACLE_WIDTH));
+                    obstacles.add(new Point(obstacleX, 0));
+                }
+            } else {
+                if (Math.random() < 0.05) {     // generate more obstacles if in the harder level
+                    int obstacleX = (int) (Math.random() * (WIDTH - OBSTACLE_WIDTH));
+                    obstacles.add(new Point(obstacleX, 0));
+                }
             }
 
             // Move health points
@@ -266,6 +284,10 @@ public class SpaceGame extends JFrame implements KeyListener {
             }
 
             int timeLeft = (int) ((gameDuration - (System.currentTimeMillis() - gameStartTime)) / 1000);
+
+            if (score >= 100) {
+                hardLevel = true;
+            }
 
             scoreLabel.setText("Score: " + score);
             healthLabel.setText("Health: " + health);
