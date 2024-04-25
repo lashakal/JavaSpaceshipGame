@@ -1,3 +1,15 @@
+/**
+
+ * Project: Solo Lab 7 Assignment
+ * Purpose Details: Space Game
+ * Course: IST 242
+ * Author: Lasha Kaliashvili
+ * Date Developed: 04/24/2024
+ * Last Date Changed: 04/24/2024
+ * Rev: 1
+
+ */
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -11,52 +23,184 @@ import java.util.List;
 import java.util.Random;
 
 public class SpaceGame extends JFrame implements KeyListener {
+    /**
+     * Width of the game window
+     */
     private static final int WIDTH = 500;
+    /**
+     * Height of the game window
+     */
     private static final int HEIGHT = 500;
+    /**
+     * Player's width
+     */
     private static final int PLAYER_WIDTH = 50;
+    /**
+     * Player's height
+     */
     private static final int PLAYER_HEIGHT = 60;
+    /**
+     * Obstacle's width
+     */
     private static final int OBSTACLE_WIDTH = 20;
+    /**
+     * Obstacle's height
+     */
     private static final int OBSTACLE_HEIGHT = 20;
+    /**
+     * Width of a health power-up
+     */
     private static final int HEALTH_POWER_UP_WIDTH = 20;
+    /**
+     * Height of a health power-up
+     */
     private static final int HEALTH_POWER_UP_HEIGHT = 20;
+    /**
+     * Projectile's width
+     */
     private static final int PROJECTILE_WIDTH = 5;
+    /**
+     * Projectile's height
+     */
     private static final int PROJECTILE_HEIGHT = 10;
+    /**
+     * Player's speed
+     */
     private static final int PLAYER_SPEED = 10;
+    /**
+     * Obstacle speed in regular mode (score < 100)
+     */
     private static final int OBSTACLE_SPEED_REGULAR = 3;
+    /**
+     * Obstacle speed in harder mode (score >= 100)
+     */
     private static final int OBSTACLE_SPEED_HARD = 5;
+    /**
+     * Health power-up's moving speed
+     */
     private static final int HEALTH_POWER_UP_SPEED = 3;
+    /**
+     * Projectile's moving speed
+     */
     private static final int PROJECTILE_SPEED = 10;
+    /**
+     * Width of the obstacle sprite
+     */
     private int spriteWidth = 20;
+    /**
+     * Width of the obstacle sprite
+     */
     private int spriteHeight = 20;
+    /**
+     * Game score
+     */
     private int score = 0;
+    /**
+     * Player's health
+     */
     private int health = 100;
 
+    /**
+     * Game window
+     */
     private JPanel gamePanel;
+    /**
+     * Text label to display score
+     */
     private JLabel scoreLabel;
+    /**
+     * Text label to display health
+     */
     private JLabel healthLabel;
+    /**
+     * Text label to display countdown timer
+     */
     private JLabel timerLabel;
+    /**
+     * Timer
+     */
     private Timer timer;
+    /**
+     * Shows whether the game is over or not
+     */
     private boolean isGameOver;
+    /**
+     * Player's position
+     */
     private int playerX, playerY;
+    /**
+     * Projectile's position
+     */
     private int projectileX, projectileY;
+    /**
+     * Shows whether projectile is visible or not
+     */
     private boolean isProjectileVisible;
+    /**
+     * Shows whether the player is firing or not
+     */
     private boolean isFiring;
+    /**
+     * Image of the spaceship
+     */
     private BufferedImage shipImage;
+    /**
+     * Sprite sheet of obstacles
+     */
     private BufferedImage spriteSheet;
+    /**
+     * Image of the health power-up
+     */
     private BufferedImage healthPowerUpImage;
+    /**
+     * Firing sound clip
+     */
     private Clip fireClip;
+    /**
+     * Collision sound clip
+     */
     private Clip collisionClip;
+    /**
+     * Shows whether the shield is active or not
+     */
     private boolean shieldActive = false;
+    /**
+     * Duration of the game = 60 seconds
+     */
     private int gameDuration = 60000;
+    /**
+     * Start time of the game
+     */
     private long gameStartTime;
+    /**
+     * Shield duration = 5 seconds
+     */
     private int shieldDuration = 5000;  // in milliseconds
+    /**
+     * When shield was activated
+     */
     private long shieldStartTime;
+    /**
+     * Shows whether we are in the harder level or not
+     */
     private boolean hardLevel = false;
 
+    /**
+     * List to store obstacles
+     */
     private List<Point> obstacles;
+    /**
+     * List to store health power-ups
+     */
     private List<Point> healthPowerUps;
+    /**
+     * List to store points representing stars
+     */
     private List<Point> stars;
 
+    /**
+     * Constructor method to set up the game
+     */
     public SpaceGame() {
         try {
             shipImage = ImageIO.read(new File("spaceship.png"));
@@ -136,6 +280,11 @@ public class SpaceGame extends JFrame implements KeyListener {
         timer.start();
     }
 
+    /**
+     * Update the graphics of the game by redrawing changing components
+     *
+     * @param g Graphics of the game
+     */
     private void draw(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -191,6 +340,9 @@ public class SpaceGame extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Update the fields of the SpaceGame
+     */
     private void update() {
         if (!isGameOver) {
             // Move obstacles
@@ -285,6 +437,7 @@ public class SpaceGame extends JFrame implements KeyListener {
 
             int timeLeft = (int) ((gameDuration - (System.currentTimeMillis() - gameStartTime)) / 1000);
 
+            // If score reaches 100, switch to the harder level
             if (score >= 100) {
                 hardLevel = true;
             }
@@ -299,6 +452,12 @@ public class SpaceGame extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Generate stars
+     *
+     * @param numStars  number of stars
+     * @return          List of generated stars
+     */
     private List<Point> generateStars(int numStars) {
         List<Point> starsList = new ArrayList<>();
         Random random = new Random();
@@ -310,6 +469,11 @@ public class SpaceGame extends JFrame implements KeyListener {
         return starsList;
     }
 
+    /**
+     * Generate a random color
+     *
+     * @return  random color that was generated
+     */
     public static Color generateRandomColor() {
         Random rand = new Random();
         int r = rand.nextInt(256);
@@ -318,6 +482,9 @@ public class SpaceGame extends JFrame implements KeyListener {
         return new Color(r, g, b);
     }
 
+    /**
+     * Play firing sound
+     */
     public void playFiringSound() {
         if (fireClip != null) {
             fireClip.setFramePosition(0);
@@ -325,6 +492,9 @@ public class SpaceGame extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Play collision sound
+     */
     public void playCollisionSound() {
         if (collisionClip != null) {
             collisionClip.setFramePosition(0);
@@ -332,23 +502,44 @@ public class SpaceGame extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Activate the shield
+     */
     private void activateShield() {
         shieldActive = true;
         shieldStartTime = System.currentTimeMillis();
     }
 
+    /**
+     * Deactivate the shield
+     */
     private void deactivateShield() {
         shieldActive = false;
     }
 
+    /**
+     * Check if the shield is active
+     *
+     * @return  True if shield is active and it's time is not up; otherwise, false
+     */
     private boolean isShieldActive() {
         return shieldActive && (System.currentTimeMillis() - shieldStartTime) < shieldDuration;
     }
 
+    /**
+     * Check if  time is up for the whole game
+     *
+     * @return  True if time is up
+     */
     private boolean isGameTimeUp() {
         return (System.currentTimeMillis() - gameStartTime) > gameDuration;
     }
 
+    /**
+     * Process key presses
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
@@ -378,12 +569,27 @@ public class SpaceGame extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Process typed keys
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void keyTyped(KeyEvent e) {}
 
+    /**
+     * Process key release
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void keyReleased(KeyEvent e) {}
 
+    /**
+     * Main method to run the space game
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
